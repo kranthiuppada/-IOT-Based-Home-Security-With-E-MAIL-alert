@@ -1,0 +1,26 @@
+import RPi.GPIO as GPIO
+import time
+import os
+
+# Pin configuration
+PIR_PIN = 7  # Adjust based on your GPIO connection
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(PIR_PIN, GPIO.IN)
+
+print("Waiting for motion...")
+
+try:
+    while True:
+        if GPIO.input(PIR_PIN):
+            print("Motion detected! Capturing image...")
+            # Run the command to capture the image and send the email
+            os.system('libcamera-still -o image.jpg && echo "Someone is detected near security system. Please check the attached image" | mail -s "Alert ! Security Breach" -A image.jpg uttamgupta2003sg@gmail.com')
+            time.sleep(10)  # Prevent repeated triggers (adjust the delay as needed)
+        else:
+            print("No motion")
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Exiting program...")
+finally:
+    GPIO.cleanup()
